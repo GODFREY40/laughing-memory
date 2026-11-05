@@ -1,0 +1,14 @@
+# Builds the Unity 6 project (WebGL) and uploads it to Azure Blob static hosting.
+trigger: [main]
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - script: echo "Build with game-ci/unity-builder or a self-hosted Unity agent (UNITY_LICENSE secret required)"
+    displayName: Build Unity project (UnityProject/, WebGL)
+  - task: AzureCLI@2
+    displayName: Upload build to Azure Storage
+    inputs:
+      azureSubscription: $(AZURE_SERVICE_CONNECTION)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: az storage blob upload-batch --account-name $(STORAGE_ACCOUNT) -d '$web' -s Build/WebGL --overwrite
